@@ -1,0 +1,19 @@
+[package]
+name = "P2MSystem"
+version = "1.0.0"
+authors = ["P2M Team"]
+
+[addresses]
+p2m_system = "0xf9d57e56266876b07459f919263caf276b07978766ace8e17b65003bd227fea5"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.AptosStdlib]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-stdlib"
+
+[dev-dependencies]

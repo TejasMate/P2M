@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2M UPI Registry - Wallet Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .wallet-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .wallet-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+        
+        .status-dot.connected {
+            background: #28a745;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .address-display {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+        
+        .upi-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-section.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result-section.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .network-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .network-info strong {
+            color: #856404;
+        }
+        
+        .demo-section {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-section h3 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        
+        .demo-btn {
+            background: #28a745;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .demo-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 P2M UPI Registry</h1>
+            <p>Connect your wallet and lookup UPI addresses</p>
+        </div>
+        
+        <div class="network-info">
+            <strong>Network:</strong> Aptos Devnet<br>
+            <strong>Contract:</strong> 0xf9d57e56266876b07459f919263caf276b07978766ace8e17b65003bd227fea5
+        </div>
+        
+        <div class="demo-section">
+            <h3>🎯 Demo Data Available</h3>
+            <p>Try these registered UPI IDs from Merchant CLI:</p>
+            <button class="btn demo-btn" onclick="fillUPI('dshdhfhd@sdhsh')">dshdhfhd@sdhsh</button>
+            <button class="btn demo-btn" onclick="fillUPI('dsdf@dsdas')">dsdf@dsdas</button>
+            <button class="btn demo-btn" onclick="fillUPI('hi@hyes')">hi@hyes</button>
+            <button class="btn demo-btn" onclick="getRegistryStats()">View Registry Stats</button>
+        </div>
+        
+        <div id="walletDetectionStatus" class="demo-section" style="display: none;">
+            <h3>🔍 Wallet Detection Status</h3>
+            <div id="walletDetectionContent"></div>
+        </div>
+        
+        <div class="wallet-section">
+            <div class="wallet-status">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="walletStatus">Wallet Disconnected</span>
+                </div>
+                <button class="btn" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+            </div>
+            <div id="walletAddress" class="address-display" style="display: none;"></div>
+        </div>
+        
+        <div class="upi-section">
+            <div class="form-group">
+                <label for="upiInput">Enter UPI ID:</label>
+                <input type="text" id="upiInput" placeholder="e.g., merchant@paytm" />
+            </div>
+            <button class="btn" id="lookupBtn" onclick="lookupUPI()">Lookup Address</button>
+        </div>
+        
+        <div id="resultSection" class="result-section">
+            <h3 id="resultTitle"></h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = '0xf9d57e56266876b07459f919263caf276b07978766ace8e17b65003bd227fea5';
+        const DEVNET_URL = 'https://fullnode.devnet.aptoslabs.com/v1';
+        let currentAccount = null;
+        
+        // Connect wallet function
+        async function connectWallet() {
+            try {
+                const connectBtn = document.getElementById('connectBtn');
+                connectBtn.innerHTML = '<div class="loading"></div> Connecting...';
+                connectBtn.disabled = true;
+                
+                // Check for different wallet providers
+                let walletProvider = null;
+                
+                // Check for Petra wallet
+                if (window.aptos) {
+                    walletProvider = window.aptos;
+                }
+                // Check for Martian wallet
+                else if (window.martian) {
+                    walletProvider = window.martian;
+                }
+                // Check for other Aptos wallets
+                else if (window.petra) {
+                    walletProvider = window.petra;
+                }
+                
+                if (!walletProvider) {
+                    throw new Error('No Aptos wallet found. Please install Petra wallet from Chrome Web Store and refresh the page.');
+                }
+                
+                // Connect to wallet
+                const response = await walletProvider.connect();
+                currentAccount = response;
+                
+                // Update UI
+                updateWalletUI(true, response.address);
+                
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                let errorMessage = error.message;
+                
+                // Provide more helpful error messages
+                if (error.message.includes('User rejected')) {
+                    errorMessage = 'Connection was rejected. Please approve the connection in your wallet.';
+                } else if (error.message.includes('not found')) {
+                    errorMessage = 'Petra wallet not detected. Please ensure Petra is installed and refresh the page.';
+                }
+                
+                showResult('error', 'Connection Failed', errorMessage);
+                updateWalletUI(false);
+            }
+        }
+        
+        // Update wallet UI
+        function updateWalletUI(connected, address = null) {
+            const statusDot = document.getElementById('statusDot');
+            const walletStatus = document.getElementById('walletStatus');
+            const connectBtn = document.getElementById('connectBtn');
+            const walletAddress = document.getElementById('walletAddress');
+            
+            if (connected) {
+                statusDot.classList.add('connected');
+                walletStatus.textContent = 'Wallet Connected';
+                connectBtn.textContent = 'Disconnect';
+                connectBtn.onclick = disconnectWallet;
+                walletAddress.textContent = address;
+                walletAddress.style.display = 'block';
+            } else {
+                statusDot.classList.remove('connected');
+                walletStatus.textContent = 'Wallet Disconnected';
+                connectBtn.textContent = 'Connect Wallet';
+                connectBtn.onclick = connectWallet;
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = 'Connect Wallet';
+                walletAddress.style.display = 'none';
+            }
+        }
+        
+        // Disconnect wallet
+        async function disconnectWallet() {
+            try {
+                // Find the active wallet provider
+                let walletProvider = null;
+                
+                if (window.aptos) {
+                    walletProvider = window.aptos;
+                } else if (window.martian) {
+                    walletProvider = window.martian;
+                } else if (window.petra) {
+                    walletProvider = window.petra;
+                }
+                
+                if (walletProvider && walletProvider.disconnect) {
+                    await walletProvider.disconnect();
+                }
+                
+                currentAccount = null;
+                updateWalletUI(false);
+                hideResult();
+            } catch (error) {
+                console.error('Disconnect failed:', error);
+                // Force UI update even if disconnect fails
+                currentAccount = null;
+                updateWalletUI(false);
+                hideResult();
+            }
+        }
+        
+        // Fill UPI input with demo data
+        function fillUPI(upiId) {
+            document.getElementById('upiInput').value = upiId;
+        }
+        
+        // Get registry stats
+        async function getRegistryStats() {
+            try {
+                showResult('info', 'Loading...', 'Fetching registry statistics...');
+                
+                const response = await fetch(`${DEVNET_URL}/view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        function: `${CONTRACT_ADDRESS}::upi_registry::get_registry_stats`,
+                        type_arguments: [],
+                        arguments: []
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const totalMerchants = data[0];
+                    const totalUPIs = data[1];
+                    
+                    showResult('success', 'Registry Statistics', `
+                        <strong>Total Merchants:</strong> ${totalMerchants}<br>
+                        <strong>Total UPI Mappings:</strong> ${totalUPIs}<br>
+                        <strong>Contract Address:</strong> <div class="address-display">${CONTRACT_ADDRESS}</div>
+                    `);
+                } else {
+                    throw new Error(data.message || 'Failed to fetch stats');
+                }
+                
+            } catch (error) {
+                console.error('Stats fetch failed:', error);
+                showResult('error', 'Failed to Load Stats', error.message);
+            }
+        }
+        
+        // Lookup UPI function
+        async function lookupUPI() {
+            const upiInput = document.getElementById('upiInput');
+            const lookupBtn = document.getElementById('lookupBtn');
+            const upiId = upiInput.value.trim();
+            
+            if (!upiId) {
+                showResult('error', 'Invalid Input', 'Please enter a UPI ID');
+                return;
+            }
+            
+            try {
+                lookupBtn.innerHTML = '<div class="loading"></div> Looking up...';
+                lookupBtn.disabled = true;
+                
+                // First check if UPI exists
+                const existsResponse = await fetch(`${DEVNET_URL}/view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        function: `${CONTRACT_ADDRESS}::upi_registry::upi_exists`,
+                        type_arguments: [],
+                        arguments: [upiId]
+                    })
+                });
+                
+                const existsData = await existsResponse.json();
+                
+                if (!existsResponse.ok) {
+                    throw new Error(existsData.message || 'Failed to check UPI existence');
+                }
+                
+                if (!existsData[0]) {
+                    showResult('error', 'UPI Not Found', `UPI ID "${upiId}" is not registered in the system.`);
+                    return;
+                }
+                
+                // Get the address for this UPI
+                const addressResponse = await fetch(`${DEVNET_URL}/view`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        function: `${CONTRACT_ADDRESS}::upi_registry::get_merchant_by_upi`,
+                        type_arguments: [],
+                        arguments: [upiId]
+                    })
+                });
+                
+                const addressData = await addressResponse.json();
+                
+                if (!addressResponse.ok) {
+                    throw new Error(addressData.message || 'Failed to get merchant address');
+                }
+                
+                const merchantAddress = addressData[0];
+                
+                // Try to get merchant info
+                try {
+                    const infoResponse = await fetch(`${DEVNET_URL}/view`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            function: `${CONTRACT_ADDRESS}::upi_registry::get_merchant_info`,
+                            type_arguments: [],
+                            arguments: [merchantAddress]
+                        })
+                    });
+                    
+                    const infoData = await infoResponse.json();
+                    
+                    if (infoResponse.ok) {
+                        const merchantInfo = infoData;
+                        const registrationDate = new Date(parseInt(merchantInfo.registration_timestamp) * 1000);
+                        
+                        showResult('success', 'UPI Found!', `
+                            <strong>UPI ID:</strong> ${upiId}<br>
+                            <strong>Merchant Address:</strong> <div class="address-display">${merchantAddress}</div>
+                            <strong>Business Name:</strong> ${merchantInfo.business_name}<br>
+                            <strong>Contact Info:</strong> ${merchantInfo.contact_info}<br>
+                            <strong>Registration Date:</strong> ${registrationDate.toLocaleDateString()}<br>
+                            <strong>Status:</strong> ${merchantInfo.is_active ? 'Active' : 'Inactive'}<br>
+                            <strong>KYC Verified:</strong> ${merchantInfo.kyc_verified ? 'Yes' : 'No'}
+                        `);
+                    } else {
+                        // If merchant info is not available, just show the address
+                        showResult('success', 'UPI Found!', `
+                            <strong>UPI ID:</strong> ${upiId}<br>
+                            <strong>Merchant Address:</strong> <div class="address-display">${merchantAddress}</div>
+                            <em>Additional merchant information not available</em>
+                        `);
+                    }
+                } catch (infoError) {
+                    // If merchant info fails, just show the address
+                    showResult('success', 'UPI Found!', `
+                        <strong>UPI ID:</strong> ${upiId}<br>
+                        <strong>Merchant Address:</strong> <div class="address-display">${merchantAddress}</div>
+                        <em>Additional merchant information not available</em>
+                    `);
+                }
+                
+            } catch (error) {
+                console.error('Lookup failed:', error);
+                showResult('error', 'Lookup Failed', error.message || 'Failed to lookup UPI address');
+            } finally {
+                lookupBtn.innerHTML = 'Lookup Address';
+                lookupBtn.disabled = false;
+            }
+        }
+        
+        // Show result
+        function showResult(type, title, content) {
+            const resultSection = document.getElementById('resultSection');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultSection.className = `result-section show ${type}`;
+            resultTitle.textContent = title;
+            resultContent.innerHTML = content;
+        }
+        
+        // Hide result
+        function hideResult() {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.className = 'result-section';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            // Wait a bit for wallet extensions to load
+            setTimeout(() => {
+                checkWalletConnection();
+            }, 1000);
+            
+            // Add enter key support for UPI input
+            document.getElementById('upiInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !document.getElementById('lookupBtn').disabled) {
+                    lookupUPI();
+                }
+            });
+        });
+        
+        // Check wallet connection
+        async function checkWalletConnection() {
+            try {
+                let walletProvider = null;
+                let detectedWallets = [];
+                
+                // Check for different wallet providers
+                if (window.aptos) {
+                    walletProvider = window.aptos;
+                    detectedWallets.push('Petra (window.aptos)');
+                }
+                if (window.martian) {
+                    if (!walletProvider) walletProvider = window.martian;
+                    detectedWallets.push('Martian (window.martian)');
+                }
+                if (window.petra) {
+                    if (!walletProvider) walletProvider = window.petra;
+                    detectedWallets.push('Petra (window.petra)');
+                }
+                
+                // Show detection status
+                showWalletDetectionStatus(detectedWallets);
+                
+                if (walletProvider && walletProvider.isConnected) {
+                    const connected = await walletProvider.isConnected();
+                    if (connected) {
+                        const account = await walletProvider.account();
+                        currentAccount = account;
+                        updateWalletUI(true, account.address);
+                    }
+                }
+            } catch (error) {
+                console.log('No wallet connected on load:', error.message);
+            }
+        }
+        
+        // Show wallet detection status
+        function showWalletDetectionStatus(detectedWallets) {
+            const statusDiv = document.getElementById('walletDetectionStatus');
+            const contentDiv = document.getElementById('walletDetectionContent');
+            
+            if (detectedWallets.length > 0) {
+                contentDiv.innerHTML = `
+                    <p><strong>✅ Detected Wallets:</strong></p>
+                    <ul>
+                        ${detectedWallets.map(wallet => `<li>${wallet}</li>`).join('')}
+                    </ul>
+                    <p><em>You can now connect your wallet!</em></p>
+                `;
+                statusDiv.style.display = 'block';
+            } else {
+                contentDiv.innerHTML = `
+                    <p><strong>❌ No Aptos wallets detected</strong></p>
+                    <p>Please install <a href="https://petra.app/" target="_blank">Petra Wallet</a> and refresh the page.</p>
+                    <p><em>Make sure to refresh the page after installing the wallet extension.</em></p>
+                `;
+                statusDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

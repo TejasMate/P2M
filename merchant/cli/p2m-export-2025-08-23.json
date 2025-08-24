@@ -1,0 +1,44 @@
+{
+  "exportInfo": {
+    "version": "1.0.0",
+    "exportDate": "2025-08-23T23:21:01.234Z",
+    "network": "devnet",
+    "contractAddress": "0xf9d57e56266876b07459f919263caf276b07978766ace8e17b65003bd227fea5",
+    "includesPrivateKeys": false,
+    "includesHistory": false
+  },
+  "merchant": {
+    "totalUpiIds": 5,
+    "generatedWallets": 0,
+    "registrationDate": "2025-08-23T23:21:01.235Z"
+  },
+  "upiIds": [
+    "test@merchant",
+    "test@newmerchant",
+    "shdhdh@shdhsd",
+    "test@directfetch",
+    "test@newcli"
+  ],
+  "pairs": [
+    {
+      "upiId": "test@merchant",
+      "hasEscrowWallet": false
+    },
+    {
+      "upiId": "test@newmerchant",
+      "hasEscrowWallet": false
+    },
+    {
+      "upiId": "shdhdh@shdhsd",
+      "hasEscrowWallet": false
+    },
+    {
+      "upiId": "test@directfetch",
+      "hasEscrowWallet": false
+    },
+    {
+      "upiId": "test@newcli",
+      "hasEscrowWallet": false
+    }
+  ]
+}
